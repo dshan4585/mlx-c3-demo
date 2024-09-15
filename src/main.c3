@@ -153,13 +153,13 @@ fn Void example_safetensors() {
       return;
    } 
 
-   File file = openning; 
-   defer { if (catch err = file.close()) io::eprintfn("Fault closing: %s", err);}
+   File opened = openning; 
+   defer { if (catch err = opened.close()) io::eprintfn("Fault closing: %s", err);}
 
    mx::Stream stream = mx::gpu_stream(); 
    defer mx::free(stream);
 
-   mx::SafeTensors st = mx::load_safetensors_file(file.file, stream);
+   mx::SafeTensors st = mx::load_safetensors_file(opened.file, stream);
    defer mx::free(st);
 
    mx::MapStringToArray map = mx::safetensors_data(st);
