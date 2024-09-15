@@ -1,0 +1,217 @@
+module mlx::mx;
+
+import std::io;
+import libc;
+
+def Void = void;
+def Int32 = int;
+def Float32 = float;
+def Float64 = double;
+def Size = isz;
+def Char = char;
+def Bool = bool;
+
+/* array.h */
+
+// An N-dimensional array object.
+def Array = Void*;
+
+// A vector of arrays.
+def VectorArray = Void*;
+
+// A vector of array vectors.
+def VectorVectorArray = Void*;
+
+def Dtype = Int32;
+// Array element type.
+const Int32 BOOL = 0i32;
+const Int32 UINT8 = 1i32;
+const Int32 UINT16 = 2i32;
+const Int32 UINT32 = 3i32;
+const Int32 UINT64 = 4i32;
+const Int32 INT8 = 5i32;
+const Int32 INT16 = 6i32;
+const Int32 INT32 = 7i32;
+const Int32 INT64 = 8i32;
+const Int32 FLOAT16 = 9i32;
+const Int32 FLOAT32 = 10i32;
+const Int32 BFLOAT16 = 11i32;
+const Int32 COMPLEX64 = 12i32;
+
+// New array from a bool scalar.
+fn Array array_from_bool(Bool val) @extern("mlx_array_from_bool");
+
+// New array from a int scalar.
+fn Array array_from_int(Int32 val) @extern("mlx_array_from_int");
+
+// New array from a float scalar.
+fn Array array_from_float(Float32 val) @extern("mlx_array_from_float");
+
+// New array from a complex scalar.
+fn Array array_from_complex(Float32 real_val, Float32 imag_val) @extern("mlx_array_from_complex");
+
+// New array from existing buffer.
+fn Array array_from_data(Void* data, Int32* shape, Int32 dim, Dtype dtype) @extern("mlx_array_from_data");
+
+// The size of the array's datatype in bytes.
+fn Size array_itemsize(Array arr) @extern("mlx_array_itemsize");
+
+// Number of elements in the array.
+fn Size array_size(Array arr) @extern("mlx_array_size");
+
+
+/**
+ * Returns a new vector of arrays, from specified arrays.
+ * The reference count of the given arrays will be increased.
+ */
+fn Array vector_array_from_arrays(Array* arrs, Size num_arrs) @extern("mlx_vector_array_from_arrays");
+/**
+ * Returns a new vector of array, containing a single specified array.
+ * The reference count of the given array will be increased.
+ */
+fn Array vector_array_from_array(Array arr) @extern("mlx_vector_array_from_array");
+
+
+// Get the array at `index` in the vector of arrays.
+fn Array vector_array_get(VectorArray vec, Size index) @extern("mlx_vector_array_get");
+
+// Size of the vector of arrays.
+fn Size vector_array_size(VectorArray vec) @extern("mlx_vector_array_size");
+
+/**
+ * Get the array at specified (`index`, `arr_index`) in the vector of array
+ * vectors.
+ */
+fn Array vector_vector_array_get2d(VectorVectorArray vec2, Size index, Size arr_index) @extern("mlx_vector_vector_array_get2d");
+
+
+/* string.h */
+
+// A vector of array vectors.
+def String = Void*;
+
+// Returns a new string, copying contents from `str`, which must end with `\0`.
+fn String string_new(Char* str) @extern("mlx_string_new");
+
+/**
+ * Returns a pointer to the string contents.
+ * The pointer is valid for the life duration of the string.
+ */
+fn Char* string_data(Void* str) @extern("mlx_string_data");
+
+
+/* object.h */
+
+// Returns a new string representing the object.
+fn String tostring(Void* obj) @extern("mlx_tostring");
+
+
+// Increases the reference count of the object.
+fn Void retrain(Void* obj) @extern("mlx_retrain");
+
+// Decreases the referene count of the object, and 
+fn Void free(Void* obj) @extern("mlx_free");
+
+
+/* stream.h */
+
+def Stream = Void*;
+
+fn Stream gpu_stream() @extern("mlx_gpu_stream");
+
+
+/* ops.h */
+
+fn Array add(Array a, Array b, Stream s) @extern("mlx_add");
+fn Array divide(Array a, Array b, Stream s) @extern("mlx_divide");
+fn Array arange(Float64 start, Float64 stop, Float64 step, Dtype dtype, Stream s) @extern("mlx_arange");
+
+
+/* closure.h */
+
+def Closure = Void*;
+def ClosureValueAndGrad = Void*;
+def UnaryFn = fn Array(Array);
+def PayloadFn = fn Array(Array, Void*);
+def FreeFn = fn Void(Void*);
+
+
+/**
+ * Returns a closure encapsulating the specified function.
+ * This is a convenience function, mapping `mlx_array` to `mlx_vector_array`
+ * under the hood.
+ */
+fn Closure closure_new_unary(UnaryFn fun) @extern("mlx_closure_new_unary");
+
+/**
+ * Returns a closure encapsulating the specified function, with the given
+ * payload. If `dtor` is not `NULL`, it will called when the closure is
+ * destroyed to free the payload.
+ */
+fn Closure closure_new_with_payload(PayloadFn fun, Void* payload, FreeFn dtor) @extern("mlx_closure_new_with_payload");
+
+// Applies the closure over the given vector of arrays argument.
+fn VectorVectorArray closure_value_and_grad_apply(
+    ClosureValueAndGrad cls,
+    VectorArray inputs) @extern("mlx_closure_value_and_grad_apply");
+/* transform.h */
+fn VectorVectorArray jvp(Closure fun, VectorArray primals, VectorArray tangents) @extern("mlx_jvp");
+fn ClosureValueAndGrad value_and_grad(Closure fun, Int32* argnums, Size num_argnums) @extern("mlx_value_and_grad");
+fn VectorVectorArray vjp(Closure fun, VectorArray primals, VectorArray cotangents) @extern("mlx_vjp");
+
+
+/* map.h */
+
+// A string-to-array map
+def MapStringToArray = Void*;
+def MapStringToString = Void*;
+
+// An iterator over a string-to-array map.
+def MapStringToArrayIterator = Void*;
+
+/**
+ * Returns a new iterator over the given map.
+ */
+fn MapStringToArrayIterator map_string_to_array_iterate(MapStringToArray map) @extern("mlx_map_string_to_array_iterate");
+/**
+ * Increment iterator.
+ * Returns `true` if iterator could actually be incremented.
+ */
+fn Bool map_string_to_array_iterator_next(MapStringToArrayIterator it) @extern("mlx_map_string_to_array_iterator_next");
+
+// Returns `true` iif iterator is at the end of the map.
+fn Bool map_string_to_array_iterator_end(MapStringToArrayIterator it) @extern("mlx_map_string_to_array_iterator_end");
+
+// Returns the key associated to the current iterator position in the map.
+fn String map_string_to_array_iterator_key(MapStringToArrayIterator it) @extern("mlx_map_string_to_array_iterator_key");
+
+// Returns the value associated to the current iterator position in the map.
+fn Array map_string_to_array_iterator_value(MapStringToArrayIterator it) @extern("mlx_map_string_to_array_iterator_value");
+   
+/* io.h */
+def SafeTensors = Void*;
+
+// Returns a empty safetensors storage.
+fn SafeTensors safetensors_new() @extern("mlx_safetensors_new");
+
+// Returns the data map.
+fn MapStringToArray safetensors_data(SafeTensors st) @extern("mlx_safetensors_data");
+
+// Returns the metadata map.
+fn MapStringToString safetensors_metadata(SafeTensors st) @extern("mlx_safetensors_metadata");
+
+// Load array from a binary file in .npyformat.
+fn Array load_file(CFile in_stream, Stream s) @extern("mlx_load_file");
+fn Array load(String file, Stream s) @extern("mlx_load");
+
+// Load dictionary of MLXArray from a safetensors file.
+fn SafeTensors load_safetensors_file(CFile in_stream, Stream s) @extern("mlx_load_safetensors_file");
+fn SafeTensors load_safetensors(String file, Stream s) @extern("mlx_load_safetensors");
+
+// Save array to a binary file in .npyformat.
+fn Void save_file(CFile out_stream, Array a) @extern("mlx_save_file");
+fn Void save(String file, Array a) @extern("mlx_save");
+
+// Save dictionary of arrays in safetensors format.
+fn Void save_safetensors_file(CFile in_stream, MapStringToArray param, MapStringToString metadata) @extern("mlx_save_safetensors_file");
+fn void save_safetensors(String file, MapStringToArray param, MapStringToString metadata) @extern("mlx_save_safetensors");
