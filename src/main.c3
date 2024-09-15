@@ -101,7 +101,7 @@ fn Void example_grad() {
 
    {| io::printn("value_and_grad");
 
-      Int32 garg = 0i32;
+      Int32 garg = 0;
 
       mx::ClosureValueAndGrad vag = mx::value_and_grad(cls, &garg, 1); 
       defer mx::free(vag);
@@ -187,5 +187,5 @@ fn Int32 main() {
    io::printn("\n[Example]"); example();
    io::printn("\n[Example-Grad]"); example_grad();
    io::printn("\n[Example-Safetensors]"); example_safetensors();
-   return 0i32;  
+   return 0;  
 }
