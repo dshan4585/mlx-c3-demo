@@ -1,0 +1,10 @@
+{
+  "langrev": "1",
+  "warnings": [ "no-unused" ],
+  "dependency-search-paths": [ "lib" ],
+  "dependencies": [ "mlx" ],
+  "authors": [ "me" ],
+  "version": "0.1.0",
+  "sources": [ "src/**" ],
+  "targets": { "example": { "type": "executable" } },
+}

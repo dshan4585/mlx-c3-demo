@@ -184,8 +184,8 @@ fn Void example_safetensors() {
 }
 
 fn Int32 main() {  
-   io::printn("[Example]"); example();
-   io::printn("[Example-Grad]"); example_grad();
-   io::printn("[Example-Safetensors]"); example_safetensors();
+   io::printn("\n[Example]"); example();
+   io::printn("\n[Example-Grad]"); example_grad();
+   io::printn("\n[Example-Safetensors]"); example_safetensors();
    return 0i32;  
 }
