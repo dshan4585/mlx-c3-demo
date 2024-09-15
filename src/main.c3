@@ -10,8 +10,10 @@ fn Void print_array(String msg, mx::Array arr) {
    mx::String str = mx::tostring(arr);
    defer mx::free(str);
 
-   io::printfn("%s", msg);
-   io::printfn("%s", ((ZString) mx::string_data(str)).copy());
+   @pool() {
+      io::printfn("%s", msg);
+      io::printfn("%s", ((ZString) mx::string_data(str)).copy());
+   };
 }  
 
 fn Void example() {
@@ -166,8 +168,8 @@ fn Void example_safetensors() {
    mx::MapStringToArrayIterator it = mx::map_string_to_array_iterate(map);
    defer mx::free(it);
 
-   while (!mx::map_string_to_array_iterator_end(it)) { 
-      {|
+   while (!mx::map_string_to_array_iterator_end(it)) {
+      @pool() { 
          mx::String key = mx::map_string_to_array_iterator_key(it);
          defer mx::free(key);
 
@@ -177,7 +179,7 @@ fn Void example_safetensors() {
          print_array(((ZString) mx::string_data(key)).copy(), value);
 
          mx::map_string_to_array_iterator_next(it);
-      |};
+      };
    }
 }
 
