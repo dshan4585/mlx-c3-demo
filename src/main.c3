@@ -1,6 +1,5 @@
 import std::io;
 import mlx::mx;
-import std::core::sanitizer::asan;
 
 def Void = void;
 def Float32 = float;

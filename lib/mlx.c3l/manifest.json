@@ -2,8 +2,7 @@
   "provides" : "mlx",
   "targets" : {
     "macos-aarch64" : {
-      "link-args" : [],
-      "dependencies" : [],
+      "link-args" : [], "dependencies" : [],
       "linked-libraries" : [ "mlxc", "mlx", "c++", "gguflib", "Foundation.framework", "Accelerate.framework", "Metal.framework" ]
     },
   }
