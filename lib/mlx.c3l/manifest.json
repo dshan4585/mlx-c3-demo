@@ -4,7 +4,7 @@
     "macos-aarch64" : {
       "link-args" : [],
       "dependencies" : [],
-      "linked-libraries" : ["mlxc", "mlx", "c++", "gguflib", "Foundation.framework", "Accelerate.framework", "Metal.framework" ]
+      "linked-libraries" : [ "mlxc", "mlx", "c++", "gguflib", "Foundation.framework", "Accelerate.framework", "Metal.framework" ]
     },
   }
 }
