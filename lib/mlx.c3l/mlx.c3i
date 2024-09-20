@@ -7,7 +7,7 @@ def Void = void;
 def Int32 = int;
 def Float32 = float;
 def Float64 = double;
-def Size = isz;
+def Size = usz;
 def Char = char;
 def Bool = bool;
 
